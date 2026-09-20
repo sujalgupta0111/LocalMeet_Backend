@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="D:\ProjectWorkPlace\LocalMeetUP\Backend\userservice"/>
 			<item value="D:\ProjectWorkPlace\LocalMeetUP\Backend"/>
 		</list>
 		<list key="projectNameTemplate">

@@ -36,11 +36,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-<!-- Outh2.0 client-->
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-oauth2-client</artifactId>
-</dependency>
+		<!-- Outh2.0 client-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<!--Env self load -->
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>spring-dotenv</artifactId>
+			<version>4.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -73,16 +80,15 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		
-	
-		
+
+
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
-		
+
+
 		<!-- ========================= 
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -116,8 +122,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		
-				
+
+
 		<!-- ========================= -->
 		<!-- Spring Security -->
 		<!-- Provides Authentication, Authorization, SecurityFilterChain,
@@ -157,14 +163,13 @@
 			<version>0.12.7</version>
 			<scope>runtime</scope>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
 
 
 		<dependency>
