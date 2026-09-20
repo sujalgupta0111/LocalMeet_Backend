@@ -1,0 +1,100 @@
+package com.user.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.Service;
+
+import com.user.dto.PageResponse;
+import com.user.dto.UserDTO;
+import com.user.dto.mapper.UserMapper;
+
+import com.user.entity.User;
+import com.user.exception.UserAlreadyExistsException;
+import com.user.exception.UserNotFoundException;
+import com.user.jwt.UserDetailsImpl;
+import com.user.repository.UserRepo;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserService implements org.springframework.security.core.userdetails.UserDetailsService {
+
+	private final UserRepo userRepo;
+	private final UserMapper userMapper;
+	
+	
+	  @Override
+	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+	        System.out.println("Loading user by username: " + username);
+
+	        Optional<User> opt = userRepo.findByUsername(username);
+
+	        if (opt.isPresent()) {
+	            User user = opt.get();
+
+	            // Convert User entity to Spring Security UserDetails
+	            return new UserDetailsImpl(user);
+	        }
+
+	        throw new UsernameNotFoundException("User not found with username: " + username);
+	    }
+	
+	
+	
+/***********************************************************************************************************************************************************************************/
+	@Transactional
+	public UserDTO addUser(UserDTO userDto) {
+		if (userRepo.existsByEmail(userDto.email())) {
+			throw new UserAlreadyExistsException("User already exists with email: " + userDto.email());
+		}
+
+		User user = userMapper.toEntity(userDto);
+		User savedUser = userRepo.save(user);
+		UserDTO savedUserDto = userMapper.toDto(savedUser);
+
+		return savedUserDto;
+	}
+
+	@Transactional
+	public void deleteUser(Long id) {
+		User user = userRepo.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found with id : " + id));
+		userRepo.delete(user);
+
+	}
+
+	@Transactional
+	public UserDTO updateUser(Long id, UserDTO dto) {
+
+		User user = userRepo.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found with id : " + id));
+		userMapper.partialUpdate(dto, user);
+
+		return userMapper.toDto(user);
+	}
+
+	public UserDTO getUserById(Long id) {
+		User user = userRepo.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found with id : " + id));
+		return userMapper.toDto(user);
+	}
+
+	public PageResponse<UserDTO> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+		Page<User> userPage = userRepo.findAll(pageable);
+		List<UserDTO> users = userPage.getContent().stream().map(userMapper::toDto).toList();
+		return new PageResponse<>(users, userPage.getNumber(), userPage.getSize(), userPage.getTotalElements(),
+				userPage.getTotalPages(), userPage.isLast());
+	}
+}

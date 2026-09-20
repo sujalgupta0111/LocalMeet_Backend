@@ -1,0 +1,8 @@
+package com.user.entity.dtos;
+
+public enum Role {
+
+    ROLE_ADMIN,
+    ROLE_MEMBER
+
+}

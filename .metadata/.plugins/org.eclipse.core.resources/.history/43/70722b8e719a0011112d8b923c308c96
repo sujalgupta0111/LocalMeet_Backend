@@ -1,0 +1,13 @@
+spring:
+  application:
+    # Config Server ko batata hai ki kaunsi configuration file load karni hai.
+    # Ye value Config Server se nahi aati.
+    name: api-gateway
+
+server:
+    port: 8080
+
+eureka:
+   client:
+       service-url:
+         defaultZone: http://localhost:8067/eureka/

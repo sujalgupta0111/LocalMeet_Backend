@@ -1,0 +1,103 @@
+package com.users.outh;
+
+import jakarta.servlet.ServletException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import com.users.dtos.OAuth2UserDetailsDTO;
+import com.users.entity.RegistrationSource;
+import com.users.entity.User;
+import com.users.jwt.JwtToken;
+import com.users.jwt.UserDetailsImpl;
+import com.users.mvc.service.AuthService;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+@RequiredArgsConstructor
+@Component
+public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+	public static int Counter = 0;
+	private final JwtToken jwtTokenUtil;
+
+	private  AuthService authService;
+
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication) throws IOException, ServletException {
+		OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+		OAuth2User oauth2User = oauthToken.getPrincipal();
+
+		Map<String, Object> attributes = oauth2User.getAttributes();
+		String provider = oauthToken.getAuthorizedClientRegistrationId();
+
+//		OAuth2UserDetailsDTO userDetailsDTO = saveOAuthUser(provider, attributes);
+//		User user = OAuth2UserDetailsDTOToUser(userDetailsDTO);
+//		UserDetailsImpl userDetails = authService.registerOuth(user);
+//		String token = jwtTokenUtil.generateToken(userDetails);
+
+		response.sendRedirect("http://localhost:3000/oauth/callback?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8));
+	}
+
+	private User OAuth2UserDetailsDTOToUser(OAuth2UserDetailsDTO userDetailsDTO) {
+
+		User user = User.builder().firstName(userDetailsDTO.getFirstName()).lastName(userDetailsDTO.getLastName())
+				.registrationSource(RegistrationSource.valueOf(userDetailsDTO.getProvider().toUpperCase())).build();
+
+		return user;
+	}
+
+	private OAuth2UserDetailsDTO saveOAuthUser(String provider, Map<String, Object> attributes) {
+
+		OAuth2UserDetailsDTO.OAuth2UserDetailsDTOBuilder builder = OAuth2UserDetailsDTO.builder().provider(provider);
+
+		switch (provider.toLowerCase()) {
+
+		case "google" -> {
+			builder.providerUserId((String) attributes.get("sub")).username((String) attributes.get("email"))
+					.email((String) attributes.get("email")).name((String) attributes.get("name"))
+					.firstName((String) attributes.get("given_name")).lastName((String) attributes.get("family_name"))
+					.profileImageUrl((String) attributes.get("picture"))
+					.emailVerified((Boolean) attributes.get("email_verified"))
+					.locale((String) attributes.get("locale"));
+		}
+
+		case "discord" -> {
+			builder.providerUserId((String) attributes.get("id")).username((String) attributes.get("username"))
+					.email((String) attributes.get("email")).name((String) attributes.get("global_name"))
+					.profileImageUrl((String) attributes.get("avatar"))
+					.emailVerified((Boolean) attributes.get("verified")).locale((String) attributes.get("locale"));
+		}
+
+		case "github" -> {
+			builder.providerUserId(String.valueOf(attributes.get("id"))).username((String) attributes.get("login"))
+					.email((String) attributes.get("email")).name((String) attributes.get("name"))
+					.profileImageUrl((String) attributes.get("avatar_url"))
+					.profileUrl((String) attributes.get("html_url"));
+		}
+
+		case "facebook" -> {
+			builder.providerUserId((String) attributes.get("id")).name((String) attributes.get("name"))
+					.email((String) attributes.get("email"));
+		}
+
+		default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: " + provider);
+		}
+
+		return builder.build();
+	}
+
+}

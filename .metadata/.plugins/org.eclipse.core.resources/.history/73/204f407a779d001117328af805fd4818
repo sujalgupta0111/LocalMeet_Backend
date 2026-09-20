@@ -1,0 +1,114 @@
+package com.user.dto.mapper;
+
+import com.user.dto.UserDTO;
+import com.user.entity.Address;
+import com.user.entity.User;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-08-16T22:50:05+0530",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.45.0.v20260224-0835, environment: Java 25.0.3 (Oracle Corporation)"
+)
+@Component
+public class UserMapperImpl implements UserMapper {
+
+    @Override
+    public User toEntity(UserDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        User user = new User();
+
+        user.setAddress( userDTOToAddress( dto ) );
+        user.setEmail( dto.email() );
+        if ( dto.id() != null ) {
+            user.setId( dto.id() );
+        }
+        user.setName( dto.name() );
+
+        return user;
+    }
+
+    @Override
+    public UserDTO toDto(User user) {
+        if ( user == null ) {
+            return null;
+        }
+
+        UserDTO.UserDTOBuilder userDTO = UserDTO.builder();
+
+        userDTO.city( userAddressCity( user ) );
+        userDTO.state( userAddressState( user ) );
+        userDTO.pincode( userAddressPincode( user ) );
+        userDTO.email( user.getEmail() );
+        userDTO.id( user.getId() );
+        userDTO.name( user.getName() );
+
+        return userDTO.build();
+    }
+
+    @Override
+    public void partialUpdate(UserDTO dto, User user) {
+        if ( dto == null ) {
+            return;
+        }
+
+        if ( user.getAddress() == null ) {
+            user.setAddress( new Address() );
+        }
+        userDTOToAddress1( dto, user.getAddress() );
+        user.setEmail( dto.email() );
+        user.setName( dto.name() );
+    }
+
+    protected Address userDTOToAddress(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+
+        Address address = new Address();
+
+        address.setCity( userDTO.city() );
+        address.setState( userDTO.state() );
+        address.setPincode( userDTO.pincode() );
+
+        return address;
+    }
+
+    private String userAddressCity(User user) {
+        Address address = user.getAddress();
+        if ( address == null ) {
+            return null;
+        }
+        return address.getCity();
+    }
+
+    private String userAddressState(User user) {
+        Address address = user.getAddress();
+        if ( address == null ) {
+            return null;
+        }
+        return address.getState();
+    }
+
+    private String userAddressPincode(User user) {
+        Address address = user.getAddress();
+        if ( address == null ) {
+            return null;
+        }
+        return address.getPincode();
+    }
+
+    protected void userDTOToAddress1(UserDTO userDTO, Address mappingTarget) {
+        if ( userDTO == null ) {
+            return;
+        }
+
+        mappingTarget.setCity( userDTO.city() );
+        mappingTarget.setState( userDTO.state() );
+        mappingTarget.setPincode( userDTO.pincode() );
+    }
+}

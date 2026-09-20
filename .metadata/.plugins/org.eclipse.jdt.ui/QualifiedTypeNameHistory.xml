@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.users.dtos.ApiResponse"/>
+    <fullyQualifiedTypeName name="com.users.mvc.service.AuthService"/>
+    <fullyQualifiedTypeName name="com.users.dtos.UserDTO"/>
+    <fullyQualifiedTypeName name="lombok.Data"/>
+</qualifiedTypeNameHistroy>

@@ -1,0 +1,88 @@
+package com.users.config;
+
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.users.jwt.JWTfilter;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Configuration
+public class SecurityConfig {
+
+	private final JWTfilter jwtFilter;
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+		http
+
+				.csrf(csrf -> csrf.disable())
+
+				.cors(cors -> {
+				})
+
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				.authorizeHttpRequests(auth -> auth
+						// Public APIs
+						.requestMatchers("/auth/**").permitAll()
+						// Swagger
+						.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+						// OAuth2 and login
+						.requestMatchers( "/oauth2/**","/login/**" ).permitAll()
+						// Admin
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+						// Manager
+						.requestMatchers("/manager/**").hasAnyRole("MANAGER", "ADMIN")
+						// User
+						.requestMatchers("/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+						// Everything else
+						.anyRequest().authenticated()
+					)
+				
+                .oauth2Login(oauth2 -> {})
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+		return authConfig.getAuthenticationManager();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean // cross origin configuration for React frontend
+	public CorsConfigurationSource corsConfigurationSource() {
+
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+
+		return source;
+	}
+
+}

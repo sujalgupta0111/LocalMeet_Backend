@@ -1,0 +1,8 @@
+package com.users.entity;
+
+public class Snippet {
+	@Enumerated(EnumType.STRING)
+	@Column(name = "registration_source", nullable = false)
+	private RegistrationSource registrationSource;
+}
+

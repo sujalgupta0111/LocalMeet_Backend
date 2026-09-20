@@ -1,0 +1,61 @@
+package com.users.mvc.service;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.users.dtos.UserDTO;
+import com.users.entity.Role;
+import com.users.entity.User;
+import com.users.entity.UserStatus;
+import com.users.jwt.UserDetailsImpl;
+import com.users.mapper.UserMapper;
+import com.users.mvc.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+	private final UserRepository userRepository;
+	private final AuthenticationManager authenticationManager;
+	private final PasswordEncoder passwordEncoder;
+	private final UserMapper userMapper;
+
+	@Override
+	@Transactional
+	public UserDetailsImpl register(UserDTO request) {
+
+		if (userRepository.existsByCredentialsUsername(request.username())) {
+			throw new IllegalArgumentException("Username already exists");
+		}
+
+		if (userRepository.existsByCredentialsEmail(request.email())) {
+			throw new IllegalArgumentException("Email already exists");
+		}
+
+		User user = userMapper.toEntity(request);
+		user.getCredentials().setPassword(passwordEncoder.encode(request.password()));
+		// Never trust role from public registration request
+		user.getCredentials().setRole(Role.USER);
+		user.getCredentials().setStatus(UserStatus.ACTIVE);
+		user.setDeleted(false);
+
+		User savedUser = userRepository.save(user);
+
+		return new UserDetailsImpl(savedUser);
+	}
+
+	@Override
+	public UserDetailsImpl login(String identifier, String password) {
+
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(identifier, password));
+
+		return (UserDetailsImpl) authentication.getPrincipal();
+	}
+}

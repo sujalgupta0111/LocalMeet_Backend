@@ -1,0 +1,100 @@
+package com.user.controller;
+
+import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.user.dto.ApiResponse;
+import com.user.dto.PageResponse;
+import com.user.dto.UserDTO;
+import com.user.service.UserService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+@RefreshScope
+@RestController
+@RequestMapping(value = "/users")
+@RequiredArgsConstructor
+public class UserController {
+
+	private final UserService userService;
+	
+	
+	@Value("${app.name}")
+	private String appname;
+	
+	@GetMapping("/config")
+	public String getConfig() {
+		return "Application Name: " + appname;
+	}
+
+	
+	@PostMapping(value = "/add", consumes = { "application/json", MediaType.APPLICATION_XML_VALUE })
+	public ResponseEntity<ApiResponse<UserDTO>> addUser(@Valid @RequestBody UserDTO user) {
+		UserDTO savedUserDto = userService.addUser(user);
+
+		ApiResponse<UserDTO> response = ApiResponse.<UserDTO>builder().success(true).message("User added successfully")
+				.data(savedUserDto).timestamp(LocalDateTime.now()).build();
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
+		userService.deleteUser(id);
+		ApiResponse<Void> response = ApiResponse.<Void>builder().success(true).message("User deleted successfully")
+				.data(null).timestamp(LocalDateTime.now()).build();
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+
+	}
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<ApiResponse<UserDTO>> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
+//Put mapping us case me badiya hai jaab hum pura resourse update karna cahate hai
+//patch us case me better hai jab hu kisi resourse ka koi particular field update karna cahate ho
+		UserDTO updatedUser = userService.updateUser(id, userDTO);
+
+		ApiResponse<UserDTO> response = ApiResponse.<UserDTO>builder().success(true)
+				.message("User updated successfully").data(updatedUser).timestamp(LocalDateTime.now()).build();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+
+	}
+
+	@GetMapping("/get/{id}")
+	public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
+		UserDTO userDto = userService.getUserById(id);
+		ApiResponse<UserDTO> response = ApiResponse.<UserDTO>builder().success(true)
+				.message("User retrieved successfully").data(userDto).timestamp(LocalDateTime.now()).build();
+
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+
+
+	@GetMapping("/getAll")
+	public ResponseEntity<ApiResponse<PageResponse<UserDTO>>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
+			@RequestParam(defaultValue = "asc") String sortDir) {
+
+		PageResponse<UserDTO> users = userService.getAllUsers(page, size, sortBy, sortDir);
+
+		ApiResponse<PageResponse<UserDTO>> response = ApiResponse.<PageResponse<UserDTO>>builder().success(true)
+				.message("Users fetched successfully").data(users).timestamp(LocalDateTime.now()).build();
+
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+}

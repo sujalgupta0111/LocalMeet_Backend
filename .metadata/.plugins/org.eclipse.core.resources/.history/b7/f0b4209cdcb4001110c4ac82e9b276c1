@@ -1,0 +1,5 @@
+public enum RegistrationSource {
+    LOCAL,
+    GOOGLE,
+    DISCORD
+}

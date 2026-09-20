@@ -1,0 +1,48 @@
+{
+  "conversationId": "75963aab-fcd2-44a6-bc0b-6ad7dc3d69ea",
+  "title": "Explain the following HQL query with a clear summa...",
+  "requesterUsername": "sujalgupta0111",
+  "responderUsername": "GitHub Copilot",
+  "turns": [
+    {
+      "message": {
+        "text": "Explain the following HQL query with a clear summary first, followed by a detailed explanation. If the query contains any SpEL expressions, explain those parts as well: \n\n@Query(\"\"\"\r\n        SELECT u\r\n        FROM User u\r\n        JOIN u.credentials c\r\n        WHERE (c.email \u003d :identifier OR c.username \u003d :identifier)\r\n          AND u.deleted \u003d false\r\n          AND c.status \u003d com.users.entity.UserStatus.ACTIVE\r\n    \"\"\")\n\n"
+      },
+      "currentDocument": {
+        "uri": "/userserviceTest/src/main/java/com/users/mvc/repository/UserRepository.java"
+      },
+      "references": [],
+      "ignoredSkills": [],
+      "userLanguage": "en",
+      "source": "panel",
+      "model": "Auto",
+      "chatMode": "Agent",
+      "customChatModeId": "Agent",
+      "needToolCallConfirmation": true,
+      "turnId": "e2e9bacb-4b47-43e4-94d3-557cd087c9bf",
+      "role": "user",
+      "timestamp": "2026-09-06T05:41:21.060538100Z"
+    },
+    {
+      "reply": {
+        "annotations": [],
+        "references": [],
+        "hideText": false,
+        "notifications": [],
+        "followups": [],
+        "errorMessages": [],
+        "editAgentRounds": [],
+        "panelMessages": [],
+        "steps": [],
+        "agentMessages": [],
+        "data": {},
+        "billingMultiplier": 0.0
+      },
+      "turnId": "e2e9bacb-4b47-43e4-94d3-557cd087c9bf",
+      "role": "copilot",
+      "timestamp": "2026-09-06T05:41:21.931567100Z"
+    }
+  ],
+  "creationDate": "2026-09-06T05:41:21.039542300Z",
+  "lastMessageDate": "2026-09-06T05:41:21.929570100Z"
+}

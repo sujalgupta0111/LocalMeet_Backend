@@ -1,0 +1,19 @@
+spring:
+  application:
+    # Config Server ko batata hai ki kaunsi configuration file load karni hai.
+    # Ye value Config Server se nahi aati.
+    name: eurekaServer
+
+  config:
+    # Config Server ka URL
+    import: optional:configserver:http://localhost:8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh,health,info
+
+  endpoint:
+    health:
+      show-details: always

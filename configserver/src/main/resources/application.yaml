@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: configserver
+
+  # Native folder (classpath:/configs) se configuration read karne ke liye
+  profiles:
+    active: native
+
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/configs
+
+        # Git repository se configuration read karne ke liye
+        # Native ki jagah Git use karna ho to:
+        # 1. spring.profiles.active=native ko remove ya comment kar do.
+        # 2. Neeche wali Git configuration uncomment kar do.
+        #
+        # git:
+        #   uri: https://github.com/your-username/config-repo
+        #   default-label: main
+server:
+    port: 8080

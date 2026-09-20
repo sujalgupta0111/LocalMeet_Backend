@@ -1,0 +1,5 @@
+package com.users.entity;
+
+public enum RegistrationSource {
+	LOCAL, OUTH_GOOGLE, OUTH_DISCORD,OUTH_GITHUB,
+}

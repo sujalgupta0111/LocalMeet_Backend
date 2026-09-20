@@ -1,0 +1,48 @@
+package com.users.dtos;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OAuth2UserDetailsDTO {
+
+    // OAuth provider
+    private String provider;
+
+    // Unique ID provided by OAuth provider
+    private String providerUserId;
+
+    // Username / login from provider
+    private String username;
+
+    // Email
+    private String email;
+
+    // Display name
+    private String name;
+
+    // First name
+    private String firstName;
+
+    // Last name
+    private String lastName;
+
+    // Profile image
+    private String profileImageUrl;
+
+    // Provider email verification status
+    private Boolean emailVerified;
+
+    // Provider locale
+    private String locale;
+
+    // Provider profile URL
+    private String profileUrl;
+}

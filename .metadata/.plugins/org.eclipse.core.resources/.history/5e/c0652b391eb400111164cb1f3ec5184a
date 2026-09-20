@@ -1,0 +1,118 @@
+app:
+  name: userservice
+
+spring:
+  application:
+    # Application ka naam
+    # Logs, Actuator aur Service Discovery me dikhai deta hai
+    name: userservice
+
+  datasource:
+    # MySQL database connection URL
+    # Database name: user
+    url: jdbc:mysql://localhost:3306/user?useSSL=false&allowPublicKeyRetrieval=true
+
+    # Database username
+    username: root
+
+    # Database password
+    password: Chirag@0111
+
+    # MySQL JDBC Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # HikariCP Connection Pool Configuration
+    hikari:
+      # Maximum kitne database connections ek saath pool me rahenge
+      maximum-pool-size: 20
+
+      # Minimum idle connections jo hamesha available rahenge
+      minimum-idle: 5
+
+      # Connection kitni der idle rahe to remove kar diya jaye (milliseconds)
+      idle-timeout: 30000
+
+      # Naya connection milne ke liye maximum wait time (milliseconds)
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      # Schema generation strategy
+      # create      -> Startup par tables create karega
+      # create-drop -> Shutdown par tables delete karega
+      # update      -> Existing tables ko update karega
+      # validate    -> Sirf validate karega
+      ddl-auto: update
+
+    # Hibernate ki generated SQL queries console me show hongi
+    show-sql: true
+
+    properties:
+      hibernate:
+        # SQL ko formatted (readable) form me print karega
+        format_sql: true
+        use_sql_comments: true
+        id:
+          new_generator_mappings: true
+
+  servlet:
+    multipart:
+      # Single file upload ki maximum size
+      max-file-size: 100MB
+
+      # Total request size (multiple files + form data)
+      max-request-size: 100MB
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1066777697646-c7vt5g7vlh2d424rk217r8bvd2p4edc6.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - profile
+              - email
+          discord:
+            client-id: 1550826235087552512
+            client-secret: ZenU4lYtEckGsU10n9nBJfbgKY1cH9zS
+            scope:
+              - identify
+              - email
+
+server:
+  # Application kis port par chalegi
+  port: 7070
+  servlet:
+    context-path: /users
+
+ # servlet:
+    # Application ka root context path
+    # "/"  => http://localhost:7071/
+    # "/api" => http://localhost:7071/api
+    #context-path: /
+
+
+
+#eureka:
+#   client:
+#       service-url:
+#         defaultZone: http://localhost:8067/eureka/
+
+
+
+logging:
+  level:
+    # Application ka default log level
+    root: INFO
+
+    # Spring MVC requests ke logs
+    org.springframework.web: DEBUG
+
+    # Hibernate SQL logs
+    org.hibernate.SQL: DEBUG
+
+jwt:
+  secret: mySuperSecretKeyForJWTAuthenticationSpringBootProject2026HS512SecureKey1234567890ABCDEF
+  token:
+    validity: 3600000 # 1 hour in milliseconds"correct it and sent it to me

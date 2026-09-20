@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move &apos;client_secret_1066777697646-c7vt5g7vlh2d424rk217r8bvd2p4edc6.apps.googleusercontent.com.json&apos; to &apos;cofiginfo&apos;" description="Move &apos;client_secret_1066777697646-c7vt5g7vlh2d424rk217r8bvd2p4edc6.apps.googleusercontent.com.json&apos; to &apos;cofiginfo&apos;" destination="src/main/resources/cofiginfo" element1="src/main/resources/static/client_secret_1066777697646-c7vt5g7vlh2d424rk217r8bvd2p4edc6.apps.googleusercontent.com.json" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1789818485450" updateReferences="true"/>
+</session>

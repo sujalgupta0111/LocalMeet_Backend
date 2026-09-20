@@ -1,0 +1,51 @@
+spring:
+  application:
+  # Config Server ko batata hai ki kaunsi configuration file load karni hai.
+  # Ye value Config Server se nahi aati.
+    name: api-gateway
+  # Eureka se automatically services discover karega.
+  # Har registered service ke liye route create karega.
+  #
+  # Abhi automatic routing disabled hai:
+  # cloud:
+  #   gateway:
+  #     server:
+  #       webflux:
+  #         discovery:
+  #           locator:
+  #             enabled: true
+  #             lower-case-service-id: true
+
+  # Manually route configure karne ke liye
+
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+
+      routes:
+        - id: user-service
+          uri: lb://userservice
+          predicates:
+            - Path=/users/**
+
+server:
+  port: 9090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8067/eureka/

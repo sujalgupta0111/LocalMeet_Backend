@@ -1,0 +1,32 @@
+# Custom application properties
+app:
+  # Application ka custom naam.
+  # Ye Spring Boot use nahi karta, sirf tumhare custom code ke liye hai.
+  name: eduservice
+
+spring:
+  application:
+    # Service ka naam.
+    # Eureka Dashboard, Logs aur Spring Cloud me isi naam se service identify hoti hai.
+    name: eurekaservice
+
+server:
+  # Application kis port par chalegi.
+  # Browser: http://localhost:8067
+  port: 8067
+
+# Eureka Server configuration
+# Eureka Server configuration
+eureka:
+  client:
+    # Server khud ko register nahi karega
+    register-with-eureka: false
+
+    # Kisi aur server se registry fetch nahi karega
+    fetch-registry: false
+
+    # Default peer URL.
+    # Standalone server me bhi isse current server par point kar dena
+    # taaki default 8761 use na ho.
+    service-url:
+      defaultZone: http://localhost:8067/eureka/
