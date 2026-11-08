@@ -3,6 +3,7 @@ package com.users.dtos.request;
 import java.util.UUID;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 

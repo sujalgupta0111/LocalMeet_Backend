@@ -46,7 +46,6 @@ public class Configurations {
 
 		return () -> Optional.of("SYSTEM");
 	}
-
 	/**
 	 * Configures Jackson ObjectMapper for JSON serialization
 	 * and deserialization throughout the application.
@@ -95,12 +94,10 @@ public class Configurations {
 
 	/**
 	 * Creates a fixed-size platform thread pool executor.
-	 *
+
 	 * Suitable for CPU-intensive operations and tasks
 	 * requiring controlled thread concurrency.+
-	 *
-	 * +a
-	 *
+
 	 * @return configured platform thread pool executor.
 	 */
 	@Bean(name = "platformThreadExecutor")

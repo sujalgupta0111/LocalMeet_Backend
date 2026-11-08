@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -61,23 +57,18 @@ public class AuthController {
 	}
 
 	@PostMapping("/oauth/exchange")
-	public ResponseEntity<ApiResponse<AuthResponse>> exchangeOAuthCode(
-			@Valid @RequestBody OAuthCodeExchangeRequest request) {
-		AuthResponse authResponse = oauthCodeStore.consume(request.code(), request.provider())
-				.orElseThrow(() -> new ResponseStatusException(
-						HttpStatus.UNAUTHORIZED, "OAuth code is invalid, expired, or already used"));
-
-		ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
-				.message("User logged in successfully").data(authResponse).timestamp(LocalDateTime.now()).build();
+	public ResponseEntity<ApiResponse<AuthResponse>> exchangeOAuthCode(@Valid @RequestBody OAuthCodeExchangeRequest request) {
+		AuthResponse authResponse = oauthCodeStore.consume(request.code(), request.provider()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "OAuth code is invalid, expired, or already used"));
+		ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true).message("User logged in successfully").data(authResponse).timestamp(LocalDateTime.now()).build();
 
 		return ResponseEntity.ok(response);
 	}
 
 	@Operation(summary = "Register a new user", description = "Creates a new user account and returns JWT token")
 	@PostMapping("/register")
-	public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody UserDTO user) {
+	public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody UserDTO user, @RequestParam(required = false) String action) {
 
-		UserDetailsImpl savedUser = authService.register(user);
+		UserDetailsImpl savedUser = authService.register(user,action);
 
 		String token = jwtTokenUtil.generateToken(savedUser);
 
@@ -91,6 +82,14 @@ public class AuthController {
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+
+	@PostMapping("/otpVerify/{action}/{email}")
+	public ResponseEntity<String> processOtp(@PathVariable String action,@PathVariable String email,@RequestParam(required = false) String otp) {
+
+		return ResponseEntity.ok(authService.processOtp(action, email, otp));
+	}
+
+
 
 
 
