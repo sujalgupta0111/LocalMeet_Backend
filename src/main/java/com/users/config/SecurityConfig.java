@@ -2,6 +2,7 @@ package com.users.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,9 @@ public class SecurityConfig {
 
 	private final JWTfilter jwtFilter;
 	private final OAuth2AuthenticationSuccessHandler  oAuth2AuthenticationSuccessHandler;
+
+	@Value("${app.frontend-url}")
+	private String frontendOrigin;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,7 +61,9 @@ public class SecurityConfig {
 						.anyRequest().authenticated()
 					)
 				
-                .oauth2Login(oauth2 -> oauth2.successHandler(oAuth2AuthenticationSuccessHandler))
+                .oauth2Login(oauth2 -> oauth2
+						.successHandler(oAuth2AuthenticationSuccessHandler)
+				)
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
@@ -77,7 +83,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
+		configuration.setAllowedOrigins(List.of(frontendOrigin));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 

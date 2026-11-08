@@ -46,6 +46,7 @@ public class Credentials {
 	private String password;
 
 	@Column(unique = true, nullable = false, length = 255)
+
 	private String email;
 
 	@Column(unique = true, length = 20)

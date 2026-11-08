@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,9 +20,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import com.users.config.security.jwt.JwtToken;
 import com.users.config.security.jwt.UserDetailsImpl;
 import com.users.dtos.request.LoginRequest;
+import com.users.dtos.request.OAuthCodeExchangeRequest;
 import com.users.dtos.request.UserDTO;
 import com.users.dtos.response.ApiResponse;
 import com.users.dtos.response.AuthResponse;
+import com.users.config.security.oauth.OAuthCodeStore;
 
 import com.users.service.AuthService;
 
@@ -38,6 +41,7 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final JwtToken jwtTokenUtil;
+	private final OAuthCodeStore oauthCodeStore;
 
 	@Operation(summary = "Login a user AND GIVE JWT TOKEN", description = "Authenticates a user and returns a JWT token along with user details")
 	@PostMapping("/login")
@@ -49,6 +53,19 @@ public class AuthController {
 				.tokenType("Bearer").name(userDetails.getName()).username(userDetails.getUsername())
 				.roles(userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
 				.email(userDetails.getUser().getCredentials().getEmail()).build();
+
+		ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
+				.message("User logged in successfully").data(authResponse).timestamp(LocalDateTime.now()).build();
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/oauth/exchange")
+	public ResponseEntity<ApiResponse<AuthResponse>> exchangeOAuthCode(
+			@Valid @RequestBody OAuthCodeExchangeRequest request) {
+		AuthResponse authResponse = oauthCodeStore.consume(request.code(), request.provider())
+				.orElseThrow(() -> new ResponseStatusException(
+						HttpStatus.UNAUTHORIZED, "OAuth code is invalid, expired, or already used"));
 
 		ApiResponse<AuthResponse> response = ApiResponse.<AuthResponse>builder().success(true)
 				.message("User logged in successfully").data(authResponse).timestamp(LocalDateTime.now()).build();
